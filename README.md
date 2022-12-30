@@ -1,1 +1,1 @@
-# vedro-advanced-tags
+# Vedro Advanced Tags
