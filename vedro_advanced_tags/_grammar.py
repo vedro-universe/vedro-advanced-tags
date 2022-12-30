@@ -4,16 +4,15 @@ from typing import Callable, List, cast
 from pyparsing import Literal, ParseResults, Word, alphanums, infixNotation, opAssoc
 
 __all__ = ("parse", "TagsType",
-           "And", "Or", "Not",
-           "Operand", "Operator",
-           "Expr", "TagsType",)
+           "AndTag", "OrTag", "NotTag",
+           "TagOperand", "TagOperator",
+           "TagExpr", "TagsType",)
 
 
 TagsType = List[str]
 
 
-class Expr(ABC):
-    @abstractmethod
+class TagExpr(ABC):
     def __init__(self, orig: str, location: int, tokens: ParseResults) -> None:
         pass
 
@@ -26,23 +25,25 @@ class Expr(ABC):
         pass
 
 
-class Operator(Expr):
+class TagOperator(TagExpr):
     pass
 
 
-class Operand(Expr):
+class TagOperand(TagExpr):
     def __init__(self, orig: str, location: int, tokens: ParseResults) -> None:
+        super().__init__(orig, location, tokens)
         self._value = tokens[0]
 
     def __repr__(self) -> str:
-        return f"Operand({self._value})"
+        return f"Tag({self._value})"
 
     def __call__(self, tags: TagsType) -> bool:
         return self._value in tags
 
 
-class And(Operator):
+class AndTag(TagOperator):
     def __init__(self, orig: str, location: int, tokens: ParseResults) -> None:
+        super().__init__(orig, location, tokens)
         self._left = tokens[0][0]
         self._right = tokens[0][-1]
 
@@ -53,8 +54,9 @@ class And(Operator):
         return cast(bool, self._left(tags) and self._right(tags))
 
 
-class Or(Operator):
+class OrTag(TagOperator):
     def __init__(self, orig: str, location: int, tokens: ParseResults) -> None:
+        super().__init__(orig, location, tokens)
         self._left = tokens[0][0]
         self._right = tokens[0][-1]
 
@@ -65,8 +67,9 @@ class Or(Operator):
         return cast(bool, self._left(tags) or self._right(tags))
 
 
-class Not(Operator):
+class NotTag(TagOperator):
     def __init__(self, orig: str, location: int, tokens: ParseResults) -> None:
+        super().__init__(orig, location, tokens)
         self._value = tokens[0][-1]
 
     def __repr__(self) -> str:
@@ -76,11 +79,11 @@ class Not(Operator):
         return not self._value(tags)
 
 
-_operand = Word(alphanums).setParseAction(Operand)
+_operand = Word(alphanums).setParseAction(TagOperand)
 _grammar = infixNotation(_operand, [
-    (Literal("not"), 1, opAssoc.RIGHT, Not),
-    (Literal("and"), 2, opAssoc.LEFT, And),
-    (Literal("or"), 2, opAssoc.LEFT, Or),
+    (Literal("not"), 1, opAssoc.RIGHT, NotTag),
+    (Literal("and"), 2, opAssoc.LEFT, AndTag),
+    (Literal("or"), 2, opAssoc.LEFT, OrTag),
 ])
 
 
