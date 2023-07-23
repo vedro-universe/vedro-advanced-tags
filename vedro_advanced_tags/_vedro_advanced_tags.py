@@ -1,16 +1,16 @@
-from typing import Callable, Type, Union
+from typing import Any, Callable, Type, Union
 
-from vedro.core import Dispatcher, Plugin, PluginConfig
+from vedro.core import Dispatcher, Plugin, PluginConfig, VirtualScenario
 from vedro.events import ArgParsedEvent, ArgParseEvent, CleanupEvent, StartupEvent
 
-from ._tag_matcher import AdvancdedTagMatcher, TagMatcher
+from ._tag_matcher import AdvancedTagMatcher, TagMatcher
 
 __all__ = ("VedroAdvancedTags", "VedroAdvancedTagsPlugin",)
 
 
 class VedroAdvancedTagsPlugin(Plugin):
     def __init__(self, config: Type["VedroAdvancedTags"], *,
-                 tag_matcher_factory: Callable[[str], TagMatcher] = AdvancdedTagMatcher) -> None:
+                 tag_matcher_factory: Callable[[str], TagMatcher] = AdvancedTagMatcher) -> None:
         super().__init__(config)
         self._show_parsed = config.show_parsed
         self._matcher_factory = tag_matcher_factory
@@ -29,14 +29,27 @@ class VedroAdvancedTagsPlugin(Plugin):
     def on_arg_parsed(self, event: ArgParsedEvent) -> None:
         self._tags = event.args.tags
 
+    def _validate_tags(self, scenario: VirtualScenario, tags: Any) -> bool:
+        if not isinstance(tags, (list, tuple, set)):
+            raise TypeError(f"Scenario '{scenario.rel_path}' tags must be a list, tuple or set, "
+                            f"got {type(tags)}")
+
+        for tag in tags:
+            if not tag.isidentifier():
+                raise ValueError(
+                    f"Scenario '{scenario.rel_path}' tag '{tag}' is not a valid identifier")
+
+        return True
+
     async def on_startup(self, event: StartupEvent) -> None:
         if self._tags is None:
             return
 
         self._matcher = self._matcher_factory(self._tags)
         async for scenario in event.scheduler:
-            tags = list(getattr(scenario._orig_scenario, "tags", ()))
-            if not self._matcher.match(tags):
+            tags = getattr(scenario._orig_scenario, "tags", ())
+            self._validate_tags(scenario, tags)
+            if not self._matcher.match(list(tags)):
                 event.scheduler.ignore(scenario)
 
     def on_cleanup(self, event: CleanupEvent) -> None:
@@ -48,5 +61,5 @@ class VedroAdvancedTagsPlugin(Plugin):
 class VedroAdvancedTags(PluginConfig):
     plugin = VedroAdvancedTagsPlugin
 
-    # Show parsed tags
+    # Show parsed tags in summary
     show_parsed: bool = False

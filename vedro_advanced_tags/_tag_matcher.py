@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 from ._grammar import TagsType, parse
 
-__all__ = ("AdvancdedTagMatcher", "TagMatcher",)
+__all__ = ("AdvancedTagMatcher", "TagMatcher",)
 
 
 class TagMatcher(ABC):
@@ -14,7 +14,7 @@ class TagMatcher(ABC):
         pass
 
 
-class AdvancdedTagMatcher(TagMatcher):
+class AdvancedTagMatcher(TagMatcher):
     def __init__(self, expr: str) -> None:
         super().__init__(expr)
         self._grammar = parse(expr)
