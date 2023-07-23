@@ -57,7 +57,7 @@ class Config(vedro.Config):
 
 ## Usage
 
-1. Adding tags to scenarios:
+First, add tags to your scenarios:
 
 ```python
 import vedro
@@ -67,11 +67,11 @@ class Scenario(vedro.Scenario):
     tags = ["P0", "API"]
 ```
 
-2. Running tests based on the tags:
+Then, you can run scenarios with specific tags.
 
 #### AND
 
-If you want to run scenarios that include both `P0` and `API` tags, use the AND operator:
+To run scenarios that include both specified tags, use the **and** operator:
 
 ```shell
 $ vedro run --tags "P0 and API"
@@ -79,7 +79,7 @@ $ vedro run --tags "P0 and API"
 
 #### OR
 
-If you want to run scenarios containing either `API` or `CLI` tags, use the OR operator:
+To run scenarios that contain either of the specified tags, use the **or** operator:
 
 ```shell
 $ vedro run --tags "API or CLI"
@@ -87,15 +87,17 @@ $ vedro run --tags "API or CLI"
 
 #### NOT
 
-To exclude scenarios with a specific tag, such as `P0`, use the NOT operator:
+To run scenarios that do not include a specific tag, use the **not** operator:
 
 ```shell
 $ vedro run --tags "not P0"
 ```
 
-#### Expressions
+#### EXPR
 
-To run scenarios that meet complex conditions, you can use expressions. For example, if you want to run scenarios that either have the `API` or `CLI` tag, but do not have the `P0` tag, you can specify:
+To run scenarios that meet multiple conditions, use expressions.
+
+For instance, to execute scenarios that either include the `API` or `CLI` tag, and do not include the `P0` tag, you can use:
 
 ```shell
 $ vedro run --tags "(API or CLI) and (not P0)"
