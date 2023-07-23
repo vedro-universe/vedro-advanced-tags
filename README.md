@@ -7,13 +7,33 @@
 
 ## Installation
 
-### 1. Install package
+<details open>
+<summary>Quick</summary>
+<p>
+
+For a quick installation, you can use a plugin manager as follows:
+
+```shell
+$ vedro plugin install vedro-advanced-tags
+$ vedro plugin disable vedro.plugins.tagger
+```
+
+</p>
+</details>
+
+<details>
+<summary>Manual</summary>
+<p>
+
+To install manually, follow these steps:
+
+1. Install the package using pip:
 
 ```shell
 $ pip3 install vedro-advanced-tags
 ```
 
-### 2. Enable plugin
+2. Next, activate the plugin in your `vedro.cfg.py` configuration file:
 
 ```python
 # ./vedro.cfg.py
@@ -30,5 +50,55 @@ class Config(vedro.Config):
 
         class VedroAdvancedTags(adv_tagger.VedroAdvancedTags):
             enabled = True
+```
 
+</p>
+</details>
+
+## Usage
+
+First, add tags to your scenarios:
+
+```python
+import vedro
+
+class Scenario(vedro.Scenario):
+    subject = "register user"
+    tags = ["P0", "API"]
+```
+
+Then, you can run scenarios with specific tags.
+
+#### AND
+
+To run scenarios that include both specified tags, use the **and** operator:
+
+```shell
+$ vedro run --tags "P0 and API"
+```
+
+#### OR
+
+To run scenarios that contain either of the specified tags, use the **or** operator:
+
+```shell
+$ vedro run --tags "API or CLI"
+```
+
+#### NOT
+
+To run scenarios that do not include a specific tag, use the **not** operator:
+
+```shell
+$ vedro run --tags "not P0"
+```
+
+#### EXPR
+
+To run scenarios that meet multiple conditions, use expressions.
+
+For instance, to execute scenarios that either include the `API` or `CLI` tag, and do not include the `P0` tag, you can use:
+
+```shell
+$ vedro run --tags "(API or CLI) and (not P0)"
 ```
