@@ -5,6 +5,8 @@
 [![PyPI - Downloads](https://img.shields.io/pypi/dm/vedro-advanced-tags?style=flat-square)](https://pypi.python.org/pypi/vedro-advanced-tags/)
 [![Python Version](https://img.shields.io/pypi/pyversions/vedro-advanced-tags.svg?style=flat-square)](https://pypi.python.org/pypi/vedro-advanced-tags/)
 
+(!) Starting from [Vedro v1.10](https://vedro.io/blog/whats-new-vedro-v1.10), the default Tagger plugin supports boolean logic in tags. Therefore, you don't need to install `vedro-advanced-tags` if you're using Vedro version 1.10 or later. You can use the boolean logic in tags in the same way as in `vedro-advanced-tags`.
+
 ## Installation
 
 <details open>
